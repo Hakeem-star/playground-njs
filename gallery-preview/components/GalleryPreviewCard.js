@@ -49,7 +49,6 @@ const GalleryPreviewCardInside = styled.div`
   height: 100%;
   padding: 0 ${cardWidth}px;
   transform: ${(props) => {
-    console.log(props.translateX);
     return `translate3D(${props.translateX}px,0,0);`;
   }};
 `;
@@ -80,7 +79,12 @@ function GalleryPreviewCard({ depth, className, image }) {
     so the entrance and leaving needs to be cleaned up here  for instances where the scroll doesn't calculate correctly
     */
     const card = GalleryPreviewCardInner.current;
-
+    console.log(
+      touchingOuterRef.current.entry.intersectionRatio,
+      previousTouchingOuterRefValue.current.entry.intersectionRatio,
+      touchingOuterRef.current.leftPosition,
+      touchingOuterRef.current.width
+    );
     //If we have entered a card
     if (
       touchingOuterRef.current.entry.intersectionRatio &&
@@ -93,10 +97,10 @@ function GalleryPreviewCard({ depth, className, image }) {
       // );
       //Initial move upon entering
       if (touchingOuterRef.current.leftPosition > 0) {
-        setTranslateX((val) => val + touchingOuterRef.current.width);
+        setTranslateX((val) => val - touchingOuterRef.current.width);
       } else {
         setTranslateX((val) => {
-          return val - touchingOuterRef.current.width;
+          return val + touchingOuterRef.current.width;
         });
       }
       //If we have left a card
@@ -130,8 +134,9 @@ function GalleryPreviewCard({ depth, className, image }) {
     //Listeners on mount
     function wheelListener(e) {
       //Adding this fixes the jitterness
-      console.log(getComputedStyle(GalleryPreviewCardInner.current).transform);
-
+      // console.log(getComputedStyle(GalleryPreviewCardInner.current).transform);
+      // console.log(touchingOuterRef.current, e.deltaY);
+      // debugger;
       if (touchingOuterRef.current.width) {
         if (e.deltaY > 0) {
           // translateX
